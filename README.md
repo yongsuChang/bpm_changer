@@ -37,7 +37,12 @@ The easiest way to run the application is using Docker Compose.
 
 1.  Clone the repository:
     ```bash
-    git clone <repository_url>
+    # Using HTTPS
+    git clone https://github.com/yongsuChang/bpm_changer.git
+    
+    # OR Using SSH
+    git clone git@github.com:yongsuChang/bpm_changer.git
+
     cd bpm_changer
     ```
 
