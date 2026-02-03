@@ -48,13 +48,20 @@ The easiest way to run the application is using Docker Compose.
 
 2.  Start the services:
     ```bash
-    docker-compose up --build
+    # Run in detached mode (background)
+    docker compose up --build -d
     ```
 
 3.  Access the application:
     -   **Frontend**: [http://localhost:5173](http://localhost:5173)
     -   **Backend API**: [http://localhost:8000](http://localhost:8000)
     -   **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+4.  Stop the application:
+    To stop the running services and remove the containers:
+    ```bash
+    docker compose down
+    ```
 
 ### Option 2: Running Locally
 
