@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+python-multipart
+librosa
+soundfile
+numpy
+# We will add pyrubberband later if needed, starting basic
