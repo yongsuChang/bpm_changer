@@ -5,64 +5,63 @@ Develop a web-based service that allows users to analyze and change the BPM (tem
 
 ## 2. Core Features
 1.  **File Upload:**
-    *   Accept audio files (MP3, WAV, etc.) from the user.
-    *   Validation: File size limit (e.g., < 20MB, configurable constant).
+    *   [x] Accept audio files (MP3, WAV, etc.) from the user.
+    *   [x] Validation: File size limit (20MB).
 2.  **Audio Analysis:**
-    *   Extract Metadata: Title, Duration, File Size.
-    *   BPM Detection: Analyze and display the original BPM.
-    *   **Time Signature Handling:** Checkbox to toggle between standard (4/4) and Waltz (3/4, 6/8) interpretation (adjusts displayed BPM if needed).
+    *   [x] Extract Metadata: Title, Duration, File Size.
+    *   [x] BPM Detection: Analyze and display the original BPM.
+    *   [x] **Time Signature Handling:** Checkbox to toggle between standard and Waltz interpretation.
 3.  **Preview:**
-    *   Browser-based audio player to listen to the uploaded file.
+    *   [x] Browser-based audio player to listen to the uploaded file.
 4.  **BPM Modification & Download:**
-    *   Input field for desired Target BPM.
-    *   Backend processing to change tempo without altering pitch (Time-stretching).
-    *   Download processed file (Filename format: `{OriginalTitle}_bpm{NewBPM}.{ext}`).
+    *   [x] Input field for desired Target BPM.
+    *   [x] Backend processing to change tempo without altering pitch (Time-stretching).
+    *   [x] Download processed file with BPM suffix.
 
 ## 3. Tech Stack
 
 ### Frontend
 *   **Framework:** React (via Vite)
-*   **Styling:** Tailwind CSS (for rapid UI development)
-*   **State Management:** React Context or local state (sufficient for this scale)
-*   **HTTP Client:** Axios or Fetch API
+*   **Styling:** Custom CSS (centered, responsive-ish)
+*   **State Management:** React local state
+*   **HTTP Client:** Axios
 
 ### Backend
-*   **Framework:** FastAPI (Python) - High performance, easy async handling.
-*   **Audio Processing:**
-    *   `librosa`: For BPM analysis and loading audio data.
-    *   `soundfile`: For saving processed audio.
-    *   `pyrubberband` (requires `rubberband-cli`): High-quality time-stretching (tempo change without pitch shift). Alternatively `librosa`'s time_stretch (lower quality but easier dependency) or `ffmpeg`. *Decision: Start with rubberband for quality, fallback to librosa/ffmpeg if deployment is too complex.*
-*   **Utilities:** `pydantic` for data validation.
+*   **Framework:** FastAPI (Python)
+*   **Audio Processing:** `librosa`, `soundfile`
+*   **Utilities:** `starlette` (BackgroundTasks for cleanup)
 
 ## 4. Development Phases
 
 ### Phase 1: Setup & Scaffolding
-*   [ ] Initialize Git repo (Done).
-*   [ ] Create directory structure (`backend/`, `frontend/`).
-*   [ ] Setup Docker environment (Dockerfile for Backend/Frontend, docker-compose.yml).
-*   [ ] Setup React project with Vite.
+*   [x] Initialize Git repo (Done).
+*   [x] Create directory structure (`backend/`, `frontend/`).
+*   [x] Setup Docker environment (Dockerfile for Backend/Frontend, docker-compose.yml).
+*   [x] Setup React project with Vite.
 
 ### Phase 2: Backend Core (Analysis)
 *   [x] Implement file upload endpoint (with size check).
 *   [x] Implement `analyze` endpoint (returns BPM, duration, metadata).
-*   [ ] Add logic for Time Signature (simply math on the frontend or backend suggestion).
+*   [x] Add logic for Time Signature (implemented on frontend).
 
 ### Phase 3: Backend Core (Processing)
 *   [x] Implement `convert` endpoint.
-    *   [x] Input: file_id, target_bpm.
+    *   [x] Input: file, original_bpm, target_bpm.
     *   [x] Process: Time-stretch audio.
-    *   [x] Output: File stream or download link.
+    *   [x] Output: File stream with BackgroundTask cleanup.
 
 ### Phase 4: Frontend UI
-*   [x] Create Upload Component (Basic).
+*   [x] Create Upload Component (Drag & Drop).
 *   [x] Build "Analysis Result" card (BPM display, Players).
 *   [x] Build "Converter" controls (Target BPM input, Download button).
-*   [ ] Integrate with Backend APIs (Completed).
+*   [x] Integrate with Backend APIs.
+*   [x] Add BPM manual correction (Half/Double).
 
 ### Phase 5: Polishing & Deployment Prep
-*   [ ] Error handling (invalid files, server errors).
-*   [ ] Loading states (spinners during upload/processing).
+*   [x] Error handling (client-side and server-side).
+*   [x] Loading states (spinners during upload/processing).
+*   [x] Layout centering and UI cleanup.
 
 ## 5. Constraints & Constants
-*   **MAX_FILE_SIZE:** 20 MB (defined in backend config).
+*   **MAX_FILE_SIZE:** 20 MB (defined in backend/docker-compose).
 *   **SUPPORTED_FORMATS:** .mp3, .wav, .ogg.
