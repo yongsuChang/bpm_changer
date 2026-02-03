@@ -17,7 +17,8 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://localhost:8000
+      - VITE_API_URL=http://${SERVER_HOST:-localhost}:8000
+      - VITE_ALLOWED_HOST=${SERVER_HOST:-localhost}
     depends_on:
       - backend
     command: pnpm dev --host
