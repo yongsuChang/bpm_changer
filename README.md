@@ -1,132 +1,97 @@
-# BPM Changer
+# 🎵 BPM Changer
 
-BPM Changer is a web application that allows users to analyze the tempo (BPM) of audio files and change it to a target BPM without altering the pitch (time-stretching).
+BPM Changer is a powerful web application that allows users to analyze the tempo (BPM) of audio files and modify it to a target BPM without altering the pitch (time-stretching). It now supports extracting audio directly from video links (like YouTube) and offers advanced editing features like custom trimming and fade-out effects.
 
-## Features
+## ✨ Features
 
-- **Audio Analysis**: Upload an audio file to automatically detect its BPM, duration, and file size.
-- **BPM Conversion**: Change the playback speed (tempo) of the audio to match a specific target BPM.
-- **Download**: Download the processed audio file.
-- **File Support**: Supports common audio formats (MP3, WAV).
+- **Dual Input Modes**:
+  - **File Upload**: Upload local MP3, WAV, or OGG files (up to 20MB).
+  - **Video Link**: Paste a YouTube or other video link to automatically extract and analyze its audio.
+- **Audio Analysis**:
+  - Automatically detects BPM, duration, and file metadata.
+  - **Waltz Mode**: Toggle between standard and 3/4 or 6/8 time signature interpretations.
+  - **Manual Correction**: Quickly halve (½) or double (2x) the detected BPM.
+- **Advanced Processing**:
+  - **BPM Conversion**: Change playback speed while maintaining the original pitch.
+  - **Custom Trimming**: Specify a target duration in minutes and seconds to trim the output.
+  - **5s Fade-out**: Optional 5-second volume fade-out at the end of the track for a smooth finish.
+- **Instant Download**: Processed files are generated on-the-fly and cleaned up automatically from the server after download.
 
-## Tech Stack
+## 🛠 Tech Stack
 
 ### Backend
-- **Language**: Python 3.9+
+- **Language**: Python 3.10
 - **Framework**: FastAPI
-- **Audio Processing**: Librosa, SoundFile
+- **Audio Processing**: Librosa, SoundFile, NumPy
+- **Extraction**: yt-dlp, FFmpeg
 - **Server**: Uvicorn
 
 ### Frontend
-- **Framework**: React (w/ TypeScript)
+- **Framework**: React (TypeScript)
 - **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Package Manager**: pnpm
+- **Styling**: Custom CSS (Responsive & Modern)
+- **HTTP Client**: Axios
 
-## Prerequisites
-
-- **Docker** and **Docker Compose** (recommended for easiest setup)
-- **Node.js** (v18+) and **pnpm** (if running frontend locally)
-- **Python** (v3.9+) (if running backend locally)
-
-## Getting Started
+## 🚀 Getting Started
 
 ### Option 1: Using Docker (Recommended)
 
 The easiest way to run the application is using Docker Compose.
 
-1.  Clone the repository:
+1.  **Clone the repository**:
     ```bash
-    # Using HTTPS
     git clone https://github.com/yongsuChang/bpm_changer.git
-    
-    # OR Using SSH
-    git clone git@github.com:yongsuChang/bpm_changer.git
-
     cd bpm_changer
     ```
 
-2.  Start the services:
+2.  **Start the services**:
     ```bash
-    # Run in detached mode (background)
     docker compose up --build -d
     ```
 
-3.  Access the application:
-    -   **Frontend**: [http://localhost:5173](http://localhost:5173)
-    -   **Backend API**: [http://localhost:8000](http://localhost:8000)
-    -   **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+3.  **Access the application**:
+    - **Frontend**: [http://localhost:5173](http://localhost:5173)
+    - **Backend API**: [http://localhost:8000](http://localhost:8000)
 
-4.  Stop the application:
-    To stop the running services and remove the containers:
+4.  **Stop the application**:
     ```bash
     docker compose down
     ```
 
 ### Option 2: Running Locally
 
-If you prefer to run the services without Docker, follow these steps.
+#### Prerequisites
+- **FFmpeg**: Required for audio processing and link extraction.
+- **Node.js** (v18+) & **pnpm**.
+- **Python** (v3.10+).
 
 #### Backend Setup
-
-1.  Navigate to the backend directory:
-    ```bash
-    cd backend
-    ```
-
-2.  Create a virtual environment (optional but recommended):
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
-
-3.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4.  Start the backend server:
-    ```bash
-    uvicorn main:app --reload
-    ```
-    The backend will start at `http://localhost:8000`.
+1. `cd backend`
+2. `pip install -r requirements.txt`
+3. `uvicorn main:app --reload`
 
 #### Frontend Setup
+1. `cd frontend`
+2. `pnpm install`
+3. `pnpm dev`
 
-1.  Navigate to the frontend directory:
-    ```bash
-    cd frontend
-    ```
+## 📖 Usage
 
-2.  Install dependencies:
-    ```bash
-    pnpm install
-    ```
+1.  **Import Audio**: Select the "Upload File" tab to use a local file, or "Video Link" to paste a YouTube URL.
+2.  **Analyze**: Click "Analyze" to detect the BPM and duration.
+3.  **Customize**:
+    - Enter your **Target BPM**.
+    - Set the **Target Length** (Min:Sec) if you wish to trim the file.
+    - Check **Apply 5s Fade-out** for a smooth ending.
+4.  **Process**: Click "Convert & Download". The app will process your request and trigger a download of the modified audio file.
 
-3.  Start the development server:
-    ```bash
-    pnpm dev
-    ```
-    The frontend will start at `http://localhost:5173`.
+## 📝 Environment Variables
 
-## Usage
+- **Backend**:
+  - `MAX_FILE_SIZE`: Maximum allowed file size in bytes (default: 20MB).
+- **Frontend**:
+  - `VITE_API_URL`: Backend API URL (default: `http://localhost:8000`).
 
-1.  Open the web interface at [http://localhost:5173](http://localhost:5173).
-2.  Upload an audio file (max 20MB by default).
-3.  View the detected BPM.
-4.  Enter a new target BPM.
-5.  Click "Convert" to process and download the new audio file.
-
-## Environment Variables
-
-You can configure the application using environment variables.
-
-**Backend:**
-- `MAX_FILE_SIZE`: Maximum allowed file size in bytes (default: 20MB).
-
-**Frontend:**
-- `VITE_API_URL`: The URL of the backend API (default: `http://localhost:8000`).
-
-## License
+## ⚖️ License
 
 [MIT](LICENSE)
