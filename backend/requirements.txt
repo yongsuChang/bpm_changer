@@ -4,4 +4,3 @@ python-multipart
 librosa
 soundfile
 numpy
-yt-dlp

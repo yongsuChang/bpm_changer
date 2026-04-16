@@ -1,11 +1,8 @@
 import os
-import shutil
 import tempfile
 import librosa
 import numpy as np
 import soundfile as sf
-import yt_dlp
-import uuid
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -15,7 +12,6 @@ from typing import Optional
 
 app = FastAPI()
 
-# Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,15 +21,12 @@ app.add_middleware(
 )
 
 MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE", 20 * 1024 * 1024)) # Default 20MB
-DOWNLOAD_DIR = os.path.join(tempfile.gettempdir(), "bpm_changer_downloads")
-os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 class AnalysisResult(BaseModel):
     filename: str
     duration: float
     bpm: float
     size: int
-    file_id: Optional[str] = None
 
 def remove_file(path: str):
     try:
@@ -43,21 +36,17 @@ def remove_file(path: str):
         print(f"Error removing file {path}: {e}")
 
 def process_audio_logic(y, sr, original_bpm, target_bpm, target_duration=None, fade_out=False):
-    # 1. Time stretch
     rate = target_bpm / original_bpm
     y_processed = librosa.effects.time_stretch(y=y, rate=rate)
-    # 2. Trim if duration is specified
     if target_duration is not None and target_duration > 0:
         target_samples = int(target_duration * sr)
         y_processed = y_processed[:target_samples]
-    # 3. Fade out (last 5 seconds)
     if fade_out:
         fade_len = int(5 * sr)
         if len(y_processed) > fade_len:
             fade_curve = np.linspace(1.0, 0.0, fade_len)
             y_processed[-fade_len:] *= fade_curve
         elif len(y_processed) > 0:
-            # If track is shorter than 5s, fade the whole thing
             fade_curve = np.linspace(1.0, 0.0, len(y_processed))
             y_processed *= fade_curve
     return y_processed
@@ -90,45 +79,6 @@ async def analyze_audio(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=f"Error processing audio: {str(e)}")
     finally:
         remove_file(tmp_path)
-
-@app.post("/analyze-url", response_model=AnalysisResult)
-async def analyze_url(url: str = Form(...)):
-    file_id = str(uuid.uuid4())
-    output_template = os.path.join(DOWNLOAD_DIR, f"{file_id}.%(ext)s")
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'outtmpl': output_template,
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'max_filesize': MAX_FILE_SIZE,
-    }
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            filename = info.get('title', 'youtube_audio') + ".mp3"
-            filepath = os.path.join(DOWNLOAD_DIR, f"{file_id}.mp3")
-            if not os.path.exists(filepath):
-                raise Exception("File was not downloaded correctly")
-            file_size = os.path.getsize(filepath)
-            y, sr = librosa.load(filepath, sr=None)
-            duration = librosa.get_duration(y=y, sr=sr)
-            tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
-            bpm = float(tempo[0]) if hasattr(tempo, "__len__") else float(tempo)
-            return AnalysisResult(
-                filename=filename,
-                duration=round(duration, 2),
-                bpm=round(bpm, 2),
-                size=file_size,
-                file_id=file_id
-            )
-    except Exception as e:
-        for f in os.listdir(DOWNLOAD_DIR):
-            if f.startswith(file_id):
-                remove_file(os.path.join(DOWNLOAD_DIR, f))
-        raise HTTPException(status_code=400, detail=f"Error extracting audio from URL: {str(e)}")
 
 @app.post("/convert")
 async def convert_audio(
@@ -163,35 +113,3 @@ async def convert_audio(
         raise HTTPException(status_code=400, detail=f"Conversion error: {str(e)}")
     finally:
         remove_file(tmp_in_path)
-
-@app.post("/convert-url")
-async def convert_url(
-    file_id: str = Form(...),
-    original_bpm: float = Form(...),
-    target_bpm: float = Form(...),
-    target_duration: Optional[float] = Form(None),
-    fade_out: bool = Form(False),
-    filename: str = Form("output.mp3")
-):
-    filepath = os.path.join(DOWNLOAD_DIR, f"{file_id}.mp3")
-    if not os.path.exists(filepath):
-        raise HTTPException(status_code=404, detail="Source file not found or expired")
-    tmp_out_path = ""
-    try:
-        y, sr = librosa.load(filepath, sr=None)
-        y_processed = process_audio_logic(y, sr, original_bpm, target_bpm, target_duration, fade_out)
-        output_filename = f"{os.path.splitext(filename)[0]}_{int(target_bpm)}bpm.mp3"
-        tmp_out_path = tempfile.mktemp(suffix=".mp3")
-        sf.write(tmp_out_path, y_processed, sr)
-        def cleanup_all():
-            remove_file(filepath)
-            remove_file(tmp_out_path)
-        return FileResponse(
-            path=tmp_out_path,
-            filename=output_filename,
-            media_type="audio/mpeg",
-            background=BackgroundTask(cleanup_all)
-        )
-    except Exception as e:
-        if tmp_out_path and os.path.exists(tmp_out_path): remove_file(tmp_out_path)
-        raise HTTPException(status_code=400, detail=f"Conversion error: {str(e)}")
