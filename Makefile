@@ -7,7 +7,7 @@ dev:
 
 dev-backend:
 	@echo "Starting Backend..."
-	@cd backend && uvicorn main:app --reload --port 8000
+	@cd backend && python3 -m uvicorn main:app --reload --port 8000
 
 dev-frontend:
 	@echo "Starting Frontend..."
@@ -16,7 +16,7 @@ dev-frontend:
 # 의존성 한 번에 설치
 install:
 	@echo "Installing Backend dependencies..."
-	@cd backend && pip install -r requirements.txt
+	@cd backend && python3 -m pip install -r requirements.txt
 	@echo "Installing Frontend dependencies..."
 	@cd frontend && pnpm install
 

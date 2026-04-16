@@ -4,89 +4,68 @@ BPM Changer is a powerful web application that allows users to analyze the tempo
 
 ## ✨ Features
 
-- **Dual Input Modes**:
-  - **File Upload**: Upload local MP3, WAV, or OGG files (up to 20MB).
-  - **Video Link**: Paste a YouTube or other video link to automatically extract and analyze its audio.
-- **Audio Analysis**:
-  - Automatically detects BPM, duration, and file metadata.
-  - **Waltz Mode**: Toggle between standard and 3/4 or 6/8 time signature interpretations.
-  - **Manual Correction**: Quickly halve (½) or double (2x) the detected BPM.
-- **Advanced Processing**:
-  - **BPM Conversion**: Change playback speed while maintaining the original pitch.
-  - **Custom Trimming**: Specify a target duration in minutes and seconds to trim the output.
-  - **5s Fade-out**: Optional 5-second volume fade-out at the end of the track for a smooth finish.
-- **Instant Download**: Processed files are generated on-the-fly and cleaned up automatically from the server after download.
+- **Dual Input Modes**: File Upload & Video Link (YouTube, etc.).
+- **Audio Analysis**: Automatic BPM detection & manual correction (½, 2x).
+- **Advanced Processing**: Time-stretching, Custom Trimming, and 5s Fade-out.
+- **Waltz Mode**: Support for 3/4 or 6/8 time signatures.
 
-## 🛠 Tech Stack
+## 🛠 Prerequisites (OS Specific Setup)
 
-### Backend
-- **Language**: Python 3.10
-- **Framework**: FastAPI
-- **Audio Processing**: Librosa, SoundFile, NumPy
-- **Extraction**: yt-dlp, FFmpeg
-- **Server**: Uvicorn
+Before running the app locally, ensure you have **Python 3.10+**, **Node.js 18+**, and **FFmpeg** installed.
 
-### Frontend
-- **Framework**: React (TypeScript)
-- **Build Tool**: Vite
-- **Styling**: Custom CSS (Responsive & Modern)
-- **HTTP Client**: Axios
+### 🍎 macOS
+```bash
+# Using Homebrew
+brew install python ffmpeg node corepack
+corepack enable pnpm
+```
+
+### 🐧 Ubuntu/Linux
+```bash
+sudo apt update
+sudo apt install python3 python3-pip ffmpeg
+# Install Node.js (via nvm recommended)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+nvm install 20
+npm install -g pnpm
+```
+
+### 🪟 Windows
+1.  **Python**: Install from [python.org](https://www.python.org/) (Check 'Add to PATH').
+2.  **FFmpeg**: Download from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) and add the `bin` folder to your System PATH.
+3.  **Node.js**: Install from [nodejs.org](https://nodejs.org/).
+4.  **pnpm**: Run `npm install -g pnpm` in PowerShell.
+
+---
 
 ## 🚀 Getting Started
 
 ### Option 1: Using Docker (Recommended)
-
-The easiest way to run the application is using Docker Compose.
-
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/yongsuChang/bpm_changer.git
-    cd bpm_changer
-    ```
-
-2.  **Start the services**:
-    ```bash
-    docker compose up --build -d
-    ```
-
-3.  **Stop the services**:
-    ```bash
-    docker compose down
-    ```
+```bash
+docker compose up --build -d
+# To stop:
+docker compose down
+```
 
 ### Option 2: Local Development (Makefile)
+If you have the prerequisites installed:
+```bash
+# 1. Install all dependencies
+make install
 
-If you have the prerequisites installed, you can use the provided `Makefile` to manage the project easily.
-
-1.  **Install all dependencies**:
-    ```bash
-    make install
-    ```
-
-2.  **Run Backend and Frontend concurrently**:
-    ```bash
-    make dev
-    ```
-    - This will start the FastAPI backend on port 8000 and the Vite frontend on port 5173.
-    - Simply press `Ctrl + C` to stop both servers.
+# 2. Run Backend and Frontend concurrently
+make dev
+```
+- **Backend**: http://localhost:8000
+- **Frontend**: http://localhost:5173
+- Press `Ctrl + C` to stop both servers.
 
 ## 📖 Usage
 
-1.  **Import Audio**: Select the "Upload File" tab to use a local file, or "Video Link" to paste a YouTube URL.
-2.  **Analyze**: Click "Analyze" to detect the BPM and duration.
-3.  **Customize**:
-    - Enter your **Target BPM**.
-    - Set the **Target Length** (Min:Sec) if you wish to trim the file.
-    - Check **Apply 5s Fade-out** for a smooth ending.
-4.  **Process**: Click "Convert & Download". The app will process your request and trigger a download of the modified audio file.
-
-## 📝 Environment Variables
-
-- **Backend**:
-  - `MAX_FILE_SIZE`: Maximum allowed file size in bytes (default: 20MB).
-- **Frontend**:
-  - `VITE_API_URL`: Backend API URL (default: `http://localhost:8000`).
+1.  **Import Audio**: Select "Upload File" or "Video Link".
+2.  **Analyze**: Click "Analyze" to detect BPM.
+3.  **Customize**: Set **Target BPM**, **Target Length**, and **Fade-out** options.
+4.  **Process**: Click "Convert & Download".
 
 ## ⚖️ License
-
 [MIT](LICENSE)
