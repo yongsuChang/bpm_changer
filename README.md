@@ -49,31 +49,26 @@ The easiest way to run the application is using Docker Compose.
     docker compose up --build -d
     ```
 
-3.  **Access the application**:
-    - **Frontend**: [http://localhost:5173](http://localhost:5173)
-    - **Backend API**: [http://localhost:8000](http://localhost:8000)
-
-4.  **Stop the application**:
+3.  **Stop the services**:
     ```bash
     docker compose down
     ```
 
-### Option 2: Running Locally
+### Option 2: Local Development (Makefile)
 
-#### Prerequisites
-- **FFmpeg**: Required for audio processing and link extraction.
-- **Node.js** (v18+) & **pnpm**.
-- **Python** (v3.10+).
+If you have the prerequisites installed, you can use the provided `Makefile` to manage the project easily.
 
-#### Backend Setup
-1. `cd backend`
-2. `pip install -r requirements.txt`
-3. `uvicorn main:app --reload`
+1.  **Install all dependencies**:
+    ```bash
+    make install
+    ```
 
-#### Frontend Setup
-1. `cd frontend`
-2. `pnpm install`
-3. `pnpm dev`
+2.  **Run Backend and Frontend concurrently**:
+    ```bash
+    make dev
+    ```
+    - This will start the FastAPI backend on port 8000 and the Vite frontend on port 5173.
+    - Simply press `Ctrl + C` to stop both servers.
 
 ## 📖 Usage
 
